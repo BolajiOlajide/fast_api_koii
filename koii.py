@@ -1,5 +1,4 @@
-from collections import namedtuple
-from typing import List, Set
+from typing import List, NamedTuple, Set
 
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
@@ -7,7 +6,11 @@ from starlette.routing import BaseRoute
 
 
 KOIIRoutes = List[BaseRoute]
-Path = namedtuple("Path", ["path", "method"])
+
+
+class Path(NamedTuple):
+    path: str
+    method: str
 
 
 class Koii(object):
@@ -22,12 +25,10 @@ class Koii(object):
             raise Exception("FastAPI app isn't valid as it has no predefined routes.")
 
     def _is_app_valid(self, app: FastAPI) -> bool:
-        return (
-            app is not None
-            and app.routes
-            and type(app.routes) == list
-            and len(app.routes) > 0
-        ) == True
+        if app is not None and app.routes:
+            for route in app.routes:
+                if isinstance(route, APIRoute):
+                    return True
 
     def _get_paths(self, routes: KOIIRoutes) -> List[Path]:
         paths = []
@@ -61,4 +62,3 @@ class Koii(object):
 
             print(method_to_print + " " + path_to_print)
         print(" ")
-
