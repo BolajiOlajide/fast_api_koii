@@ -3,7 +3,7 @@ from typing import List, NamedTuple, Set
 from colorama import Fore
 from fastapi import FastAPI
 from fastapi.routing import APIRoute
-from starlette.routing import BaseRoute
+from starlette.routing import BaseRoute, Route
 
 
 KOIIRoutes = List[BaseRoute]
@@ -25,9 +25,11 @@ class Koii(object):
         else:
             raise Exception("FastAPI app isn't valid as it has no predefined routes.")
 
-    def _is_app_valid(self, app: FastAPI) -> bool:
+    @staticmethod
+    def _is_app_valid(app: FastAPI) -> bool:
         for route in app.routes:
-            if isinstance(route, APIRoute):
+            if isinstance(route, (APIRoute, Route)):
+                # valid for defined FastApi and predefined starlette routes (docs routes)
                 return True
 
     def _get_paths(self, routes: KOIIRoutes) -> List[Path]:
